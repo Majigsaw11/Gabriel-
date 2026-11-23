@@ -11,10 +11,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: ukgabriel
-
     permissions:
       contents: read
 
@@ -44,6 +40,6 @@ jobs:
         with:
           name: ukgabriel-forge-1.20.1-jar
           path: |
-            ukgabriel/build/libs/*.jar
-            !ukgabriel/build/libs/*-sources.jar
+            build/libs/*.jar
+            !build/libs/*-sources.jar
           if-no-files-found: error
