@@ -1,12 +1,22 @@
-name: Compiling
+name: Build Full Forge Mod JAR
 
 on:
   push:
+    branches: [ "main", "master" ]
   pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ukgabriel
+
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout repository
@@ -23,14 +33,17 @@ jobs:
         with:
           gradle-version: '8.5'
 
-      - name: Compile
+      - name: Build full mod JAR
         run: gradle clean build --no-daemon
 
-      - name: Archive Artifacts
+      - name: Inspect built JARs
+        run: ls -lh build/libs/
+
+      - name: Upload compiled JAR artifact
         uses: actions/upload-artifact@v7
         with:
-          name: Artifacts
+          name: ukgabriel-forge-1.20.1-jar
           path: |
-            build/libs/*.jar
-            !build/libs/*-sources.jar
+            ukgabriel/build/libs/*.jar
+            !ukgabriel/build/libs/*-sources.jar
           if-no-files-found: error
