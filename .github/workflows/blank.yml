@@ -1,20 +1,49 @@
-name: Compiling
+name: Build Full Forge Mod JAR
 
 on:
   push:
+    branches: [ "main", "master" ]
   pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: ukgabriel
+
+    permissions:
+      contents: read
+
     steps:
-    - name: Compile
-      uses: Ruochenfu2011/compilation@v1
-      
-    - name: Archive Artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: Artifacts
-        path: ./build/libs
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v6
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Gradle 8.5
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          gradle-version: '8.5'
+
+      - name: Build full mod JAR
+        run: gradle clean build --no-daemon
+
+      - name: Inspect built JARs
+        run: ls -lh build/libs/
+
+      - name: Upload compiled JAR artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: ukgabriel-forge-1.20.1-jar
+          path: |
+            ukgabriel/build/libs/*.jar
+            !ukgabriel/build/libs/*-sources.jar
+          if-no-files-found: error
